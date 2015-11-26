@@ -2,26 +2,27 @@ require 'aws-sdk'
 require 'net/dns'
 require 'capistrano/dsl'
 
-def elastic_load_balancer(dns_name, *args)
+def elastic_load_balancer(load_balancer_or_dns_name, *args)
 
-    include Capistrano::DSL
+  include Capistrano::DSL
 
-    aws_region= fetch(:aws_region, 'us-east-1')
-    AWS.config(:access_key_id => fetch(:aws_access_key_id),
-             :secret_access_key => fetch(:aws_secret_access_key),
-             :ec2_endpoint => "ec2.#{aws_region}.amazonaws.com",
-             :elb_endpoint => "elasticloadbalancing.#{aws_region}.amazonaws.com")
+  Aws.config.update(access_key_id:     fetch(:aws_access_key_id),
+                    region:            fetch(:aws_region),
+                    secret_access_key: fetch(:aws_secret_access_key))
 
-    load_balancer = AWS::ELB.new.load_balancers.find { |elb| elb.dns_name.downcase == dns_name.downcase }
-    raise "EC2 Load Balancer not found for #{name} in region #{aws_region}" if load_balancer.nil?
-
-    load_balancer.instances.each do |instance|
-        next if instance.status.to_s != 'running'
-        hostname = if instance.vpc
-            instance.private_ip_address
+  description = Aws::ElasticLoadBalancing::Client.new.describe_load_balancers
+  load_balancer = description.load_balancer_descriptions.detect { |elb| elb.load_balancer_name == load_balancer_or_dns_name || elb.dns_name == load_balancer_or_dns_name }
+  if load_balancer
+    load_balancer.instances.map { |i| Aws::EC2::Instance.new(id: i.instance_id).data }.each do |instance|
+        next if instance.state.name.to_s != 'running'
+        hostname = if instance.vpc_id
+          instance.private_ip_address
         else
-            instance.dns_name || instance.private_ip_address
+          instance.public_ip_address || instance.private_ip_address
         end
         server(hostname, *args)
     end
+  else
+    raise "EC2 Load Balancer not found for #{load_balancer_or_dns_name} in region #{fetch(:aws_region)}"
+  end
 end
