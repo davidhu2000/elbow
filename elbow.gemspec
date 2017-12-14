@@ -15,7 +15,7 @@ Gem::Specification.new do |gem|
   gem.name          = "elbow"
   gem.require_paths = ["lib"]
   gem.version       = Elbow::VERSION
-  gem.add_dependency('aws-sdk')
+  gem.add_dependency('aws-sdk', '~> 2.2.26')
   gem.add_dependency('net-dns')
 
 end
