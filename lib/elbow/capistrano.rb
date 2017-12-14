@@ -26,12 +26,13 @@ def elastic_load_balancer(load_balancer_or_dns_name, *args)
         p instance.private_ip_address
         p instance.public_ip_address
         p instance.network_interfaces
+        p instance.network_interfaces.first.private_ip_address
         p '==============='
         p (instance.methods - Object.methods).sort
         p '==============='
 
         hostname = if instance.vpc_id
-          instance.private_ip_address
+          instance.network_interfaces.first.private_ip_address
         else
           instance.public_ip_address || instance.private_ip_address
         end
