@@ -12,9 +12,20 @@ def elastic_load_balancer(load_balancer_or_dns_name, *args)
 
   description = Aws::ElasticLoadBalancing::Client.new.describe_load_balancers
   load_balancer = description.load_balancer_descriptions.detect { |elb| elb.load_balancer_name == load_balancer_or_dns_name || elb.dns_name == load_balancer_or_dns_name }
+  p '>>>>> Load Balancer'
+  p load_balancer
+  p load_balancer.load_balancer_name
+  p load_balancer.dns_name
+
   if load_balancer
     load_balancer.instances.map { |i| Aws::EC2::Instance.new(id: i.instance_id).data }.each do |instance|
         next if instance.state.name.to_s != 'running'
+
+        p '>>>>> Instances'
+        p instance.vpc_id
+        p instance.private_ip_address
+        p instance.public_ip_address
+        
         hostname = if instance.vpc_id
           instance.private_ip_address
         else
