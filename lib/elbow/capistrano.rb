@@ -25,6 +25,7 @@ def elastic_load_balancer(load_balancer_or_dns_name, *args)
         p instance.vpc_id
         p instance.private_ip_address
         p instance.public_ip_address
+        p instance.network_interfaces
         p '==============='
         p (instance.methods - Object.methods).sort
         p '==============='
