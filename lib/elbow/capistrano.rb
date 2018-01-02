@@ -20,23 +20,17 @@ def elastic_load_balancer(load_balancer_or_dns_name, *args)
     load_balancer.instances.map { |i| Aws::EC2::Instance.new(id: i.instance_id).data }.each do |instance|
         next if instance.state.name.to_s != 'running'
 
-        # p '>>>>> Instances'
-        # p instance.vpc_id
-        # p instance.private_ip_address
-        # p instance.public_ip_address
-        # p instance.network_interfaces.first.private_ip_address
+        p '>>>>> Instances'
+        p instance.vpc_id
+        p instance.private_ip_address
+        p instance.network_interfaces.first.private_ip_address
+        p instance.network_interfaces.second.private_ip_address
 
-        # hostname = if instance.vpc_id
-        #   instance.network_interfaces.first.private_ip_address
-        # else
-        #   instance.public_ip_address || instance.private_ip_address
-        # end
-
-        # if instance.private_ip_address == '172.16.3.89'
-        #   hostname = instance.network_interfaces.first.private_ip_address
-        # elsif instance.private_ip_address == '172.16.1.201'
-        #   hostname = instance.private_ip_address
-        # end
+        if instance.private_ip_address == '172.16.3.89'
+          hostname = instance.network_interfaces.first.private_ip_address
+        elsif instance.private_ip_address == '172.16.1.201'
+          hostname = instance.network_interfaces.second.private_ip_address
+        end
 
         begin
           puts '> Trying network_interfaces.first.private_ip_address'
