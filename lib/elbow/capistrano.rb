@@ -24,7 +24,7 @@ def elastic_load_balancer(load_balancer_or_dns_name, *args)
         p instance.vpc_id
         p instance.private_ip_address
         p instance.network_interfaces.first.private_ip_address
-        p instance.network_interfaces.second.private_ip_address
+        p instance.network_interfaces.last.private_ip_address
 
         if instance.private_ip_address == '172.16.3.89'
           hostname = instance.network_interfaces.first.private_ip_address
@@ -32,15 +32,15 @@ def elastic_load_balancer(load_balancer_or_dns_name, *args)
           hostname = instance.network_interfaces.last.private_ip_address
         end
 
-        begin
-          puts '> Trying network_interfaces.first.private_ip_address'
-          hostname = instance.network_interfaces.first.private_ip_address
-          server(hostname, *args)
-        rescue
-          puts '> Timeout error. Trying network_interfaces.last.private_ip_address'
-          hostname = instance.network_interfaces.last.private_ip_address
-          server(hostname, *args)
-        end
+        # begin
+        #   puts '> Trying network_interfaces.first.private_ip_address'
+        #   hostname = instance.network_interfaces.first.private_ip_address
+        #   server(hostname, *args)
+        # rescue
+        #   puts '> Timeout error. Trying network_interfaces.last.private_ip_address'
+        #   hostname = instance.network_interfaces.last.private_ip_address
+        #   server(hostname, *args)
+        # end
 
     end
   else
