@@ -39,10 +39,12 @@ def elastic_load_balancer(load_balancer_or_dns_name, *args)
         # end
 
         begin
-          hostname = instance.private_ip_address
+          puts '> Trying network_interfaces.first.private_ip_address'
+          hostname = instance.network_interfaces.first.private_ip_address
           server(hostname, *args)
         rescue => Net::SSH::ConnectionTimeout
-          hostname = instance.network_interfaces.first.private_ip_address
+          puts '> Timeout error. Trying network_interfaces.last.private_ip_address'
+          hostname = instance.network_interfaces.last.private_ip_address
           server(hostname, *args)
         end
 
