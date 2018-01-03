@@ -32,6 +32,8 @@ def elastic_load_balancer(load_balancer_or_dns_name, *args)
           hostname = instance.network_interfaces.last.private_ip_address
         end
 
+        server(hostname, *args)
+        
         # begin
         #   puts '> Trying network_interfaces.first.private_ip_address'
         #   hostname = instance.network_interfaces.first.private_ip_address
