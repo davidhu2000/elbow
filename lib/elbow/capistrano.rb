@@ -26,14 +26,14 @@ def elastic_load_balancer(load_balancer_or_dns_name, *args)
         p instance.network_interfaces.first.private_ip_address
         p instance.network_interfaces.last.private_ip_address
 
-        if instance.private_ip_address == '172.16.3.89'
+        if instance.private_ip_address.include? '89'
           hostname = instance.network_interfaces.first.private_ip_address
-        elsif instance.private_ip_address == '172.16.1.201'
+        elsif instance.private_ip_address.include? '201'
           hostname = instance.network_interfaces.last.private_ip_address
         end
 
         server(hostname, *args)
-        
+
         # begin
         #   puts '> Trying network_interfaces.first.private_ip_address'
         #   hostname = instance.network_interfaces.first.private_ip_address
